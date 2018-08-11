@@ -1,1 +1,4 @@
 include ":interface"
+
+include ":rhino"
+project(":rhino").projectDir = file("implementation/rhino")

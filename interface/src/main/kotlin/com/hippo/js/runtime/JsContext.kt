@@ -25,9 +25,15 @@ import java.io.Closeable
 interface JsContext : Closeable {
 
   /**
-   * Creates a new `JsScope`. Each `JsScope` in the same `JsContext` is independent in js level.
+   * Creates a new `JsScope` with the id. Each `JsScope` in the same `JsContext`
+   * is independent in js level. Throws an exception if the id is bound to an `JsScope`.
    */
-  fun newScope(): JsScope
+  fun newScope(id: String): JsScope
+
+  /**
+   * Returns the `JsScope` with the id, `null` if no one has the id.
+   */
+  fun getScope(id: String): JsScope?
 
   /**
    * Closes the `JsContext`, all of its `JsScope` and releases any resources associated with it.

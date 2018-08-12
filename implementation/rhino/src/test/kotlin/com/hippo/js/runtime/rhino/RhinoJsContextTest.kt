@@ -23,10 +23,10 @@ import java.io.Reader
 class RhinoJsContextTest {
 
   @Test
-  fun test() {
+  fun testRequire() {
     val finder = ResourceJsFinder()
     rhinoJsContext(finder, 9).use { context ->
-      val scope = context.newScope()
+      val scope = context.newScope("scope")
       finder.require("main").use { reader ->
         scope.eval<Unit>(reader)
       }

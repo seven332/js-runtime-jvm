@@ -28,7 +28,7 @@ class RhinoAndroidJsContextTest {
   fun test() {
     val finder = AssetJsFinder()
     rhinoJsContext(finder, -1).use { context ->
-      val scope = context.newScope()
+      val scope = context.newScope("scope")
       finder.require("main").use { reader ->
         scope.eval<Unit>(reader)
       }

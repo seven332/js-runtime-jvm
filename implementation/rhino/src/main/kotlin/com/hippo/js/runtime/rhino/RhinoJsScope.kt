@@ -17,31 +17,45 @@
 package com.hippo.js.runtime.rhino
 
 import com.hippo.js.runtime.JsScope
-import org.mozilla.javascript.Context
 import org.mozilla.javascript.ScriptableObject
 import java.io.Reader
 
-internal class RhinoJsScope(private val context: Context, private val scope: ScriptableObject) : JsScope {
+internal class RhinoJsScope(
+    private val context: RhinoJsContext,
+    private val id: String,
+    private val scope: ScriptableObject
+) : JsScope {
 
   private var closed = false
 
-  private fun checkClosed(errorMessage: String) {
+  private fun checkThread(action: String) {
+    context.checkThread(action)
+  }
+
+  private fun checkClosed(action: String) {
     if (closed) {
-      throw IllegalStateException(errorMessage)
+      throw IllegalStateException("$action called on recycled JsScope")
     }
   }
 
   override fun <T> eval(source: String): T {
-    checkClosed("eval called on recycled JsScope")
-    return context.evaluateString(scope, source, "<source>", 1, null) as T
+    checkThread("eval")
+    checkClosed("eval")
+    return context.eval(scope, source)
   }
 
   override fun <T> eval(reader: Reader): T {
-    checkClosed("eval called on recycled JsScope")
-    return context.evaluateReader(scope, reader, "<reader>", 1, null) as T
+    checkThread("eval")
+    checkClosed("eval")
+    return context.eval(scope, reader)
   }
 
   override fun close() {
-    closed = true
+    checkThread("close")
+
+    if (!closed) {
+      closed = true
+      context.closeScope(id)
+    }
   }
 }
